@@ -189,6 +189,15 @@ export default function LoginScreen({ domain, onLoginSuccess, onSwitchOrg, onFor
 
   return (
     <SafeAreaView style={styles.container}>
+      {isBiometricSupported && hasBiometricCredentials && (
+        <TouchableOpacity
+          style={styles.topRightBiometric}
+          onPress={() => handleBiometricLogin()}
+          disabled={loading}
+        >
+          <Ionicons name="finger-print" size={28} color="#3B5998" />
+        </TouchableOpacity>
+      )}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
@@ -259,7 +268,7 @@ export default function LoginScreen({ domain, onLoginSuccess, onSwitchOrg, onFor
 
             <View style={styles.loginRow}>
               <TouchableOpacity
-                style={[styles.button, isBiometricSupported && hasBiometricCredentials ? styles.buttonHalf : null, loading && styles.buttonDisabled]}
+                style={[styles.button, loading && styles.buttonDisabled]}
                 onPress={handleLogin}
                 disabled={loading}
               >
@@ -269,16 +278,6 @@ export default function LoginScreen({ domain, onLoginSuccess, onSwitchOrg, onFor
                   <Text style={styles.buttonText}>{t(tokens.common.logIn)}</Text>
                 )}
               </TouchableOpacity>
-
-              {isBiometricSupported && hasBiometricCredentials && (
-                <TouchableOpacity
-                  style={styles.biometricButton}
-                  onPress={() => handleBiometricLogin()}
-                  disabled={loading}
-                >
-                  <Ionicons name="finger-print" size={28} color="#3B5998" />
-                </TouchableOpacity>
-              )}
             </View>
           </View>
         </View>
@@ -368,6 +367,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   button: {
+    flex: 1,
     backgroundColor: '#3B5998',
     height: 55,
     borderRadius: 10,
@@ -379,24 +379,29 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 8,
   },
-  buttonHalf: {
-    flex: 1,
-    marginRight: 15,
-  },
-  biometricButton: {
-    width: 55,
-    height: 55,
-    borderRadius: 10,
+  topRightBiometric: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 20 : 40, // Responsive top spacing accounting for status bar
+    right: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     backgroundColor: '#F0F4FF',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#3B5998',
+    zIndex: 10,
+    shadowColor: '#3B5998',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 4,
   },
   loginRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   buttonDisabled: {
     backgroundColor: '#A0A0A0',
