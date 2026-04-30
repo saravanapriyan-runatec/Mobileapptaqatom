@@ -1,0 +1,12 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<path opacity="0.24" d="M200 100C200 155.228 155.228 200 100 200C44.7715 200 0 155.228 0 100C0 44.7715 44.7715 0 100 0C155.228 0 200 44.7715 200 100ZM10.9955 100C10.9955 149.156 50.8442 189.005 100 189.005C149.156 189.005 189.005 149.156 189.005 100C189.005 50.8442 149.156 10.9955 100 10.9955C50.8442 10.9955 10.9955 50.8442 10.9955 100Z" fill="url(#pattern0_13843_118729)"/>
+<defs>
+<pattern id="pattern0_13843_118729" patternUnits="userSpaceOnUse" patternTransform="matrix(5.93182 0 0 15.1591 -1.05823 -0.414208)" preserveAspectRatio="none" viewBox="-0.931244 -0.364503 5.22 13.34" width="1" height="1">
+<use xlink:href="#pattern0_13843_118729_inner" transform="translate(-5.22 -13.34)"/>
+<use xlink:href="#pattern0_13843_118729_inner" transform="translate(0 -13.34)"/>
+<use xlink:href="#pattern0_13843_118729_inner" transform="translate(-5.22 0)"/>
+<g id="pattern0_13843_118729_inner">
+<line x1="-0.465621" y1="22.8178" x2="8.53438" y2="-0.1822" stroke="#8E44AD"/>
+</g>
+</pattern></defs>
+</svg>

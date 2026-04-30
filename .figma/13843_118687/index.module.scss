@@ -1,0 +1,35 @@
+* {
+  box-sizing: border-box;
+}
+
+.frame8 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 361px;
+  height: 20px;
+
+  .a0404 {
+    flex-shrink: 0;
+    line-height: 22px;
+    letter-spacing: 0;
+    color: var(--Grey-Grey-5, #1e1f24);
+    font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .frame4 {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    column-gap: 12px;
+
+    .frame {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      overflow: hidden;
+    }
+  }
+}

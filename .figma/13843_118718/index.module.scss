@@ -1,0 +1,308 @@
+* {
+  box-sizing: border-box;
+}
+
+.frame23506 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 12px;
+  box-shadow: 0px 0px 4px 1px #0000001f;
+  background: #ffffff;
+  padding: 12px;
+  width: 361px;
+  height: 370px;
+  overflow: hidden;
+  row-gap: 6px;
+
+  .rectangle3 {
+    flex-shrink: 0;
+    border-radius: 202px;
+    background: var(--Grey-Grey-1, #eff0f3);
+    width: 46px;
+    height: 4px;
+  }
+
+  .frame1000004067 {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    align-items: flex-start;
+    align-self: stretch;
+    row-gap: 16px;
+
+    .timerStart {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+    }
+
+    .frame1000004066 {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      align-items: flex-start;
+      align-self: stretch;
+      row-gap: 16px;
+
+      .thursday222026 {
+        flex-shrink: 0;
+        line-height: 17px;
+        letter-spacing: 0;
+        color: var(--Grey-Grey-5, #1e1f24);
+        font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .frame1000004055 {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        align-self: stretch;
+        justify-content: space-between;
+
+        .frame1000004139 {
+          display: inline-flex;
+          flex-shrink: 0;
+          align-items: center;
+          column-gap: 4px;
+
+          .heroiconsOutlineCale {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            overflow: hidden;
+          }
+        }
+
+        .viewDetails {
+          flex-shrink: 0;
+          line-height: 15px;
+          letter-spacing: 0;
+          color: var(--Primary-Blue-11, #395cc6);
+          font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+          font-size: 12px;
+        }
+      }
+
+      .frame1000004065 {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        align-self: stretch;
+        justify-content: space-between;
+
+        .frame1000004060 {
+          position: relative;
+          flex-shrink: 0;
+          width: 200px;
+          height: 200px;
+
+          .ellipse2 {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            border-radius: 50%;
+            box-shadow: 0px 0px 8px 1px #0000001f;
+            background: #ffffff;
+            width: 160px;
+            height: 160px;
+          }
+
+          .ellipse3 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 200px;
+          }
+
+          .ellipse4 {
+            display: flex;
+            position: absolute;
+            top: 0;
+            left: 0;
+            align-items: center;
+            padding: 56px 44px 56px 45px;
+            width: 200px;
+            height: 200px;
+            background-image: url(../image/mn31lxvz-43q8vwg.svg);
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+
+            .frame1000004059 {
+              display: flex;
+              flex-direction: column;
+              flex-grow: 1;
+              align-items: center;
+              row-gap: 12px;
+
+              .workDuration {
+                flex-shrink: 0;
+                align-self: stretch;
+                opacity: 0.47;
+                text-align: center;
+                letter-spacing: 0;
+                color: var(--Grey-Grey-5, #1e1f24);
+                font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+                font-size: 10px;
+              }
+
+              .frame1000004056 {
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 0;
+                align-items: center;
+                align-self: stretch;
+                margin-right: 13px;
+                margin-left: 13px;
+                row-gap: 4px;
+
+                .a014230 {
+                  flex-shrink: 0;
+                  align-self: stretch;
+                  letter-spacing: 0;
+                  color: var(--Grey-Grey-5, #1e1f24);
+                  font-family: DS-Digital, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+                  font-size: 20px;
+                  font-weight: 700;
+                }
+              }
+
+              .frame1000004058 {
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 0;
+                align-items: center;
+                align-self: stretch;
+                row-gap: 4px;
+
+                .frame1000004057 {
+                  display: flex;
+                  flex-shrink: 0;
+                  align-items: center;
+                  align-self: stretch;
+                  justify-content: center;
+                  column-gap: 4px;
+                  border-radius: 6px;
+                  background: var(--Primary-Blue-3, #edf2fe);
+                  padding: 4px;
+
+                  .heroiconsMicroClock {
+                    flex-shrink: 0;
+                    width: 16px;
+                    height: 16px;
+                    overflow: hidden;
+                  }
+
+                  .a6H19MLeftToday {
+                    flex-shrink: 0;
+                    line-height: 12px;
+                    letter-spacing: 0;
+                    color: var(--Primary-Blue-11, #395cc6);
+                    font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+                    font-size: 10px;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        .frame1000004064 {
+          display: flex;
+          flex-direction: column;
+          flex-shrink: 0;
+          align-items: flex-start;
+          row-gap: 16px;
+
+          .frame1000004062 {
+            display: flex;
+            flex-shrink: 0;
+            align-items: center;
+            column-gap: 8px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 2px 1px #0000001f;
+            background: #ffffff;
+            padding-right: 8px;
+            padding-left: 8px;
+            width: 125px;
+            height: 49px;
+
+            .frame10000040562 {
+              display: flex;
+              flex-direction: column;
+              flex-grow: 1;
+              align-items: center;
+              row-gap: 4px;
+
+              .checkInTime {
+                flex-shrink: 0;
+                opacity: 0.47;
+                line-height: 12px;
+                letter-spacing: 0;
+                color: var(--Grey-Grey-5, #1e1f24);
+                font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+                font-size: 10px;
+              }
+            }
+          }
+        }
+      }
+
+      .frame1000004153 {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        align-self: stretch;
+        column-gap: 6px;
+        border: 1px solid #eff0f3;
+        border-radius: 8px;
+        background: #ffffff;
+        padding: 4px 5px;
+        height: 32px;
+
+        .heroiconsOutlineMapP {
+          flex-shrink: 0;
+          width: 18px;
+          height: 18px;
+          overflow: hidden;
+        }
+
+        .hopesCollegeCoimbato {
+          flex-shrink: 0;
+          line-height: 13px;
+          letter-spacing: 0;
+          color: var(--Grey-Grey-5, #1e1f24);
+          font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+          font-size: 11px;
+        }
+      }
+    }
+
+    .component81 {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      align-self: stretch;
+      justify-content: center;
+      column-gap: 4px;
+      border-radius: 4px;
+      background: var(--Accent-Colors-Red, #e74c3c);
+      padding: 8px;
+      overflow: hidden;
+
+      .checkOut {
+        flex-shrink: 0;
+        line-height: 16px;
+        letter-spacing: 0;
+        color: #ffffff;
+        font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+      }
+    }
+  }
+}

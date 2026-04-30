@@ -1,0 +1,85 @@
+{
+  "expo": {
+    "name": "Taqadom HRMS",
+    "slug": "hrms-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon-master.png",
+    "scheme": "taqadom",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/adaptive-foreground.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#395CC6"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hr-ms.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Your current location helps confirm where you are marking attendance. This ensures accuracy and allows you to view your location on a map.",
+        "NSLocationAlwaysUsageDescription": "Background location access is used to continuously monitor attendance and ensure accurate logging of work hours, even when the app is not open.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses your location to verify attendance at your workplace or client site. Location tracking continues even when the app is in the background to ensure accurate logs.",
+        "NSCameraUsageDescription": "This app needs access to your camera so you can take a profile picture or capture documents like ID cards or receipts.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library so you can select and upload images such as your profile picture or expense receipts.",
+        "NSPhotoLibraryAddUsageDescription": "The app may save images (e.g., generated reports or receipts) to your photo library for easy access and sharing.",
+        "NSMicrophoneUsageDescription": "Microphone access is required to record voice notes, audio messages, or verbal input when submitting forms.",
+        "NSDocumentsFolderUsageDescription": "This app saves payslips and reports to your device's Documents folder so you can access and share them later.",
+        "NSDownloadsFolderUsageDescription": "This app downloads payslips and reports so you can access and share them later.",
+        "NSFaceIDUsageDescription": "This app requires FaceID access to allow you to log in quickly and securely.",
+        "UIFileSharingEnabled": true,
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "targetSdkVersion": 36,
+      "versionCode": 1,
+      "minSdkVersion": 24,
+      "package": "com.hr_ms.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-foreground.png",
+        "backgroundColor": "#395CC6",
+        "resizeMode": "contain"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ],
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/icon.png"
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minifyEnabled": true,
+            "proguardFiles": true,
+            "enableProguardInReleaseBuilds": true,
+            "enableMinifyInReleaseBuilds": true
+          }
+        }
+      ],
+      "expo-secure-store",
+      "expo-notifications"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c39e97bf-187b-4247-b42d-a98c36f526d4"
+      }
+    },
+    "owner": "saravananpriyan21052000"
+  }
+}

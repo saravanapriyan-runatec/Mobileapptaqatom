@@ -1,0 +1,28 @@
+* {
+  box-sizing: border-box;
+}
+
+.frame1000004142 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 8px;
+  width: 192px;
+  height: 16px;
+
+  .swipeDownToSeeActivi {
+    flex-shrink: 0;
+    line-height: 15px;
+    letter-spacing: 0;
+    color: #4169e1;
+    font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+  }
+
+  .heroiconsOutlineChev {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+  }
+}
