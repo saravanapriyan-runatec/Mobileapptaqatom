@@ -314,33 +314,25 @@ export const AttendanceProvider = ({ children }) => {
     try {
       if (!id) return;
       const todayStr = moment().locale('en').format('YYYY-MM-DD');
-      const yesterdayStr = moment().locale('en').subtract(1, 'day').format('YYYY-MM-DD');
       
       let res = await ProfileServices.getCheckInData(id, todayStr);
       let allPunches = Array.isArray(res) ? res : (res?.results || (res?.id ? [res] : []));
       
-      // Step 1: Check if there's an active "In" today
-      const hasActiveToday = allPunches.some(p => (String(p.punch_state) === '0' || String(p.clock_type) === '0')) && 
-                             !allPunches.some(p => (String(p.punch_state) === '1' || String(p.clock_type) === '1'));
-      
-      if (!hasActiveToday) {
-        // Step 2: Look at yesterday for a night shift session
-        const yRes = await ProfileServices.getCheckInData(id, yesterdayStr);
-        const yPunches = Array.isArray(yRes) ? yRes : (yRes?.results || (yRes?.id ? [yRes] : []));
-        const latestY = [...yPunches].sort((a,b) => new Date(b.punch_time || b.updated_at) - new Date(a.punch_time || a.updated_at))[0];
-        
-        // Professional Dynamic Window: Only resume if within ShiftDuration + 6 hours (Max tolerance for late checkouts)
-        const maxSessionDuration = (shiftDurationSeconds + (6 * 3600)) * 1000;
-        const isRecentY = latestY && (Date.now() - new Date(latestY.punch_time || latestY.updated_at).getTime()) < maxSessionDuration;
-
-        if (latestY && (String(latestY.punch_state) === '0' || String(latestY.clock_type) === '0') && isRecentY) {
-          allPunches = yPunches;
-        }
+      // Strict state syncing based purely on get_checkin_data array!
+      if (allPunches.length === 0) {
+        // Empty Array -> Check-in Enabled
+        setIsCheckedIn(false);
+        setIsSessionCompleted(false);
+        setHasCheckedIn(false);
+        return; // We skip fetchAttendanceStatus because this is the absolute truth for today
       }
 
       const hasOutToday = allPunches.some(p => (String(p.punch_state) === '1' || String(p.clock_type) === '1'));
       if (hasOutToday) {
-        setIsSessionCompleted(true); setIsCheckedIn(false); setHasCheckedIn(true);
+        // Has Check-out -> Work Completed (Disabled)
+        setIsSessionCompleted(true); 
+        setIsCheckedIn(false); 
+        setHasCheckedIn(true);
         SecureStore.setItemAsync(`sessionCompleted_${id}`, todayStr).catch(()=>{});
         await fetchAttendanceStatus(id, false, allPunches);
         return;
@@ -348,11 +340,15 @@ export const AttendanceProvider = ({ children }) => {
       
       const latest = [...allPunches].sort((a, b) => new Date(b.punch_time || b.updated_at) - new Date(a.punch_time || a.updated_at))[0];
       if (latest && (String(latest.punch_state) === '0' || String(latest.clock_type) === '0')) {
+          // Has Check-in -> Check-out Enabled
           const pDate = moment(latest.punch_time || latest.updated_at).toDate();
           const maxSessionDuration = (shiftDurationSeconds + (6 * 3600)) * 1000;
           
           if ((Date.now() - pDate.getTime()) < maxSessionDuration) {
-            checkInDateRef.current = pDate; setIsCheckedIn(true); setHasCheckedIn(true); setIsSessionCompleted(false);
+            checkInDateRef.current = pDate; 
+            setIsCheckedIn(true); 
+            setHasCheckedIn(true); 
+            setIsSessionCompleted(false);
             setRawCheckIn(pDate);
             setAttendanceDate(pDate);
             setCurrentDate(pDate); // Lock UI to the shift start date
@@ -364,8 +360,11 @@ export const AttendanceProvider = ({ children }) => {
             return;
           }
       }
+      // Fallback
       await fetchAttendanceStatus(id, false, allPunches);
-    } catch (err) { await fetchAttendanceStatus(id); }
+    } catch (err) { 
+      await fetchAttendanceStatus(id); 
+    }
   };
 
   useEffect(() => {
@@ -378,6 +377,8 @@ export const AttendanceProvider = ({ children }) => {
 
   useEffect(() => {
     let interval = null, pollInterval = null;
+    
+    // Fast timer for updating the UI elapsed seconds (Only runs when checked in)
     if (isCheckedIn && !isSessionCompleted) {
       scheduleAttendanceNotification();
       interval = setInterval(() => {
@@ -392,10 +393,8 @@ export const AttendanceProvider = ({ children }) => {
 
           const currentElapsed = Math.floor((now.getTime() - checkInDateRef.current.getTime()) / 1000);
           setElapsedSeconds(currentElapsed);
-          // Visual cap for totalHours at 9h for the display, but we keep tracking internally
           setTotalHours(formatDuration(Math.min(currentElapsed, shiftDurationSeconds)));
           
-          // --- 9-HOUR NOTIFICATION: ONLY Notify, do NOT stop ---
           if (currentElapsed >= shiftDurationSeconds && !hasSentShiftNotification.current) {
                 scheduleShiftCompleteNotification();
                 hasSentShiftNotification.current = true;
@@ -406,8 +405,7 @@ export const AttendanceProvider = ({ children }) => {
                 });
           }
 
-          // --- 24-HOUR LIMIT: Auto-stop and lock session ---
-          if (currentElapsed >= 86400) { // 24 Hours
+          if (currentElapsed >= 86400) { 
             setIsCheckedIn(false);
             setIsSessionCompleted(true);
             setIsMissedCheckout(true);
@@ -416,10 +414,16 @@ export const AttendanceProvider = ({ children }) => {
           }
         }
       }, 1000);
-      pollInterval = setInterval(() => { if (employeeId && !isSessionCompleted) resumeActiveSession(employeeId); }, 30000);
     } else {
-      cancelAttendanceNotification(); clearInterval(interval); clearInterval(pollInterval);
+      cancelAttendanceNotification(); 
+      clearInterval(interval); 
     }
+    
+    // Continuous background polling (every 1 minute) to sync UI state directly with get_checkin_data
+    pollInterval = setInterval(() => { 
+      if (employeeId) resumeActiveSession(employeeId); 
+    }, 60000);
+
     return () => { clearInterval(interval); clearInterval(pollInterval); };
   }, [isCheckedIn, isSessionCompleted, employeeId, shiftDurationSeconds]);
 
@@ -516,11 +520,68 @@ export const AttendanceProvider = ({ children }) => {
     try {
       const today = moment().locale('en').format('YYYY-MM-DD');
       const response = await ProfileServices.getEmployeeShiftDetails({ emp_id: id, start_date: today, end_date: today });
-      const shift = (Array.isArray(response) ? response : response?.results)?.[0];
-      if (shift) {
-        // Calculate dynamic shift duration
-        const startTime = moment(shift.start_time, 'HH:mm:ss');
-        const endTime = moment(shift.end_time, 'HH:mm:ss');
+      const dayData = (Array.isArray(response) ? response : response?.results)?.[0];
+      
+      if (dayData && Array.isArray(dayData.shifts) && dayData.shifts.length > 0) {
+        const now = moment();
+        let activeShift = null;
+        let minDiff = Infinity;
+
+        // Try to find the exactly currently ongoing shift, or the closest one
+        for (const s of dayData.shifts) {
+            if (!s.start_time || !s.end_time) continue;
+            
+            const startTime = moment(s.start_time, 'HH:mm:ss');
+            let endTime = moment(s.end_time, 'HH:mm:ss');
+            if (endTime.isBefore(startTime)) {
+                endTime.add(1, 'days');
+            }
+            
+            // 1. If we are currently INSIDE this shift, it's the active one!
+            if (now.isBetween(startTime, endTime)) {
+                activeShift = s;
+                break;
+            }
+            
+            // 2. Otherwise, calculate how close we are to this shift
+            const distToStart = Math.abs(now.diff(startTime));
+            const distToEnd = Math.abs(now.diff(endTime));
+            const minShiftDist = Math.min(distToStart, distToEnd);
+            
+            if (minShiftDist < minDiff) {
+                minDiff = minShiftDist;
+                activeShift = s;
+            }
+        }
+        
+        // Fallback to first shift if none found somehow
+        if (!activeShift) {
+            activeShift = dayData.shifts[0];
+        }
+
+        if (activeShift && activeShift.start_time && activeShift.end_time) {
+          const startTime = moment(activeShift.start_time, 'HH:mm:ss');
+          const endTime = moment(activeShift.end_time, 'HH:mm:ss');
+          if (endTime.isBefore(startTime)) {
+            endTime.add(1, 'days');
+          }
+          const durationSecs = endTime.diff(startTime, 'seconds');
+          setShiftDurationSeconds(durationSecs);
+
+          // Find shift name dynamically
+          const shiftKey = Object.keys(activeShift).find(k => k.startsWith('shift-'));
+          const shiftName = shiftKey && activeShift[shiftKey] ? activeShift[shiftKey]['shift-name'] : 'General Shift';
+
+          setRawShiftData({
+            name: shiftName,
+            start: activeShift.start_time,
+            end: activeShift.end_time
+          });
+        }
+      } else if (dayData && dayData.start_time && dayData.end_time) {
+        // Fallback to legacy single shift format just in case
+        const startTime = moment(dayData.start_time, 'HH:mm:ss');
+        const endTime = moment(dayData.end_time, 'HH:mm:ss');
         if (endTime.isBefore(startTime)) {
           endTime.add(1, 'days');
         }
@@ -528,12 +589,14 @@ export const AttendanceProvider = ({ children }) => {
         setShiftDurationSeconds(durationSecs);
 
         setRawShiftData({
-          name: shift.shift?.name || 'General Shift',
-          start: shift.start_time,
-          end: shift.end_time
+          name: dayData.shift?.name || 'General Shift',
+          start: dayData.start_time,
+          end: dayData.end_time
         });
       }
-    } catch (e) {}
+    } catch (e) {
+      console.log('DEBUG [fetchShiftDetails]: Error fetching shifts', e);
+    }
   };
 
   const fetchLocation = async () => {

@@ -2735,10 +2735,21 @@ const ProfileServices = {
     });
   },
   getCheckInData(empId, date) {
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+    console.log("--------------------------------------------------");
+    console.log("⏰ CHECK-IN DEBUG REQUEST");
+    console.log("--------------------------------------------------");
+    console.log("🎯 API Endpoint:", `${API_URL}/attendance/clockInOut/get_checkin_data/`);
+    console.log("👤 Employee ID:", empId);
+    console.log("📅 Target Date:", date);
+    console.log("⏰ Current App Time:", currentTime);
+    console.log("--------------------------------------------------\n");
     return new Promise((resolve, reject) => {
       APIService.request(
         {
-          url: `${API_URL}/attendance/clockInOut/get_checkin_data/?emp_id=${empId}&date=${date}`,
+          url: `${API_URL}/attendance/clockInOut/get_checkin_data/?emp_id=${empId}&date=${date}&time=${currentTime}`,
           method: 'GET',
         },
         (error, data) => {
@@ -2746,10 +2757,10 @@ const ProfileServices = {
             reject(error);
             return;
           }
-          // console.log("\n---------- [API DEBUG: getCheckInData] ----------");
-          // console.log("URL:", `${API_URL}/attendance/clockInOut/get_checkin_data/?emp_id=${empId}&date=${date}`);
-          // console.log("RESPONSE:", JSON.stringify(data, null, 2));
-          // console.log("--------------------------------------------------\n");
+          console.log("\n---------- [API DEBUG: getCheckInData] ----------");
+          console.log("URL:", `${API_URL}/attendance/clockInOut/get_checkin_data/?emp_id=${empId}&date=${date}&time=${currentTime}`);
+          console.log("RESPONSE:", JSON.stringify(data, null, 2));
+          console.log("--------------------------------------------------\n");
           resolve(data);
         },
       );
@@ -2990,7 +3001,7 @@ const ProfileServices = {
       console.warn("⚠️ Shift Details API: Missing dates in payload!", payload);
     }
     const url = `${API_URL}/attendance/emp_schedule/get_shift_for_employee/?emp_id=${emp_id || ''}&start_date=${start_date || ''}&end_date=${end_date || ''}`;
-    // console.log("📡 [API CALL] getEmployeeShiftDetails Payload:", JSON.stringify(payload, null, 2));
+    console.log("📡 [API CALL] getEmployeeShiftDetails Payload:", JSON.stringify(payload, null, 2));
     return new Promise((resolve, reject) => {
       APIService.request(
         {
@@ -3003,7 +3014,7 @@ const ProfileServices = {
             reject(error);
             return;
           }
-          // console.log("✅ [API RESPONSE] getEmployeeShiftDetails:", JSON.stringify(data, null, 2));
+          console.log("✅ [API RESPONSE] getEmployeeShiftDetails:", JSON.stringify(data, null, 2));
           resolve(data);
         },
       );

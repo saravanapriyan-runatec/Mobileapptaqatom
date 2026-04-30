@@ -1,5 +1,5 @@
 import APIService from "../APIService";
-let API_URL = "https://api-mvp.hr-ms.com"
+let API_URL = "https://api-dev-mvp.hr-ms.com"
 
 
 

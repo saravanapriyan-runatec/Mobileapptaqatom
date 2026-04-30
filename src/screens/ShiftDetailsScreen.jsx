@@ -76,9 +76,64 @@ export default function ShiftDetailsScreen({ onBack }) {
           // Map Shift Data - Use today's shift if possible, otherwise first one
           const shiftList = Array.isArray(shiftResponse) ? shiftResponse : (shiftResponse?.results || []);
           const todayStr = formatDate(new Date());
-          const todayShift = shiftList.find(s => s.date === todayStr) || shiftList[0];
+          const todayData = shiftList.find(s => s.date === todayStr) || shiftList[0];
           
-          setShiftData(todayShift);
+          let activeShift = null;
+          if (todayData && Array.isArray(todayData.shifts) && todayData.shifts.length > 0) {
+            const now = new Date();
+            let minDiff = Infinity;
+            
+            for (const s of todayData.shifts) {
+              if (!s.start_time || !s.end_time) continue;
+              
+              const [sH, sM] = s.start_time.split(':').map(Number);
+              const [eH, eM] = s.end_time.split(':').map(Number);
+              
+              const startTime = new Date(now);
+              startTime.setHours(sH, sM, 0, 0);
+              
+              const endTime = new Date(now);
+              endTime.setHours(eH, eM, 0, 0);
+              if (endTime < startTime) {
+                endTime.setDate(endTime.getDate() + 1); // handle overnight shifts
+              }
+              
+              // 1. Check if exactly inside the shift
+              if (now >= startTime && now <= endTime) {
+                activeShift = s;
+                break;
+              }
+              
+              // 2. Otherwise calculate absolute distance to shift bounds
+              const distToStart = Math.abs(now - startTime);
+              const distToEnd = Math.abs(now - endTime);
+              const minShiftDist = Math.min(distToStart, distToEnd);
+              
+              if (minShiftDist < minDiff) {
+                minDiff = minShiftDist;
+                activeShift = s;
+              }
+            }
+            if (!activeShift) activeShift = todayData.shifts[0];
+          }
+
+          if (activeShift) {
+             const shiftKey = Object.keys(activeShift).find(k => k.startsWith('shift-'));
+             const shiftName = shiftKey && activeShift[shiftKey] ? activeShift[shiftKey]['shift-name'] : 'General Shift';
+             
+             setShiftData({
+                ...todayData,
+                shift: { name: shiftName },
+                start_time: activeShift.start_time,
+                end_time: activeShift.end_time,
+                break_times: activeShift.break_times,
+                holiday: activeShift.holiday,
+                holiday_alias: activeShift.holiday_alias
+             });
+          } else {
+             setShiftData(todayData);
+          }
+
           setAllShifts(shiftList);
 
           // Map Holidays - Use the dedicated holiday API (yearly) instead of filtering from the monthly shift list
