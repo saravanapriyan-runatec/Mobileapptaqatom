@@ -40,7 +40,6 @@ export const AttendanceProvider = ({ children }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [shiftInfo, setShiftInfo] = useState({ name: '--', start: '--:--', end: '--:--' });
-  const [rawShiftData, setRawShiftData] = useState(null);
   const [employeeId, setEmployeeId] = useState(null);
   const [rawCheckIn, setRawCheckIn] = useState(null);
   const [rawCheckOut, setRawCheckOut] = useState(null);
@@ -219,17 +218,10 @@ export const AttendanceProvider = ({ children }) => {
   }, [currentDate, employeeId, isCheckedIn, shiftInfo]);
 
   useEffect(() => {
-    if (rawShiftData) {
-      setShiftInfo({
-        name: rawShiftData.name,
-        start: moment(rawShiftData.start, 'HH:mm:ss').format('hh:mm A'),
-        end: moment(rawShiftData.end, 'HH:mm:ss').format('hh:mm A')
-      });
-    }
     // Re-format check-in/out times on language change
     if (rawCheckIn) setCheckInTime(moment(rawCheckIn).format('hh:mm A'));
     if (rawCheckOut) setCheckOutTime(moment(rawCheckOut).format('hh:mm A'));
-  }, [rawShiftData, rawCheckIn, rawCheckOut, i18n.language]);
+  }, [rawCheckIn, rawCheckOut, i18n.language]);
 
   const fetchAttendanceStatus = async (id, skipCheckInOverwrite = false, punchData = null) => {
     try {
@@ -313,6 +305,10 @@ export const AttendanceProvider = ({ children }) => {
   const resumeActiveSession = async (id) => {
     try {
       if (!id) return;
+      
+      // Update shift details first to ensure we are using the correct shift for the current time
+      await fetchShiftDetails(id);
+      
       const todayStr = moment().locale('en').format('YYYY-MM-DD');
       
       let res = await ProfileServices.getCheckInData(id, todayStr);
@@ -324,6 +320,11 @@ export const AttendanceProvider = ({ children }) => {
         setIsCheckedIn(false);
         setIsSessionCompleted(false);
         setHasCheckedIn(false);
+        setCheckInTime('--:--');
+        setCheckOutTime('--:--');
+        setTotalHours('00:00:00');
+        setElapsedSeconds(0);
+        hasSentShiftNotification.current = false;
         return; // We skip fetchAttendanceStatus because this is the absolute truth for today
       }
 
@@ -393,7 +394,7 @@ export const AttendanceProvider = ({ children }) => {
 
           const currentElapsed = Math.floor((now.getTime() - checkInDateRef.current.getTime()) / 1000);
           setElapsedSeconds(currentElapsed);
-          setTotalHours(formatDuration(Math.min(currentElapsed, shiftDurationSeconds)));
+          setTotalHours(formatDuration(currentElapsed)); // Allow it to run into overtime without capping
           
           if (currentElapsed >= shiftDurationSeconds && !hasSentShiftNotification.current) {
                 scheduleShiftCompleteNotification();
@@ -572,10 +573,10 @@ export const AttendanceProvider = ({ children }) => {
           const shiftKey = Object.keys(activeShift).find(k => k.startsWith('shift-'));
           const shiftName = shiftKey && activeShift[shiftKey] ? activeShift[shiftKey]['shift-name'] : 'General Shift';
 
-          setRawShiftData({
+          setShiftInfo({
             name: shiftName,
-            start: activeShift.start_time,
-            end: activeShift.end_time
+            start: moment(activeShift.start_time, 'HH:mm:ss').format('hh:mm A'),
+            end: moment(activeShift.end_time, 'HH:mm:ss').format('hh:mm A')
           });
         }
       } else if (dayData && dayData.start_time && dayData.end_time) {
@@ -588,10 +589,10 @@ export const AttendanceProvider = ({ children }) => {
         const durationSecs = endTime.diff(startTime, 'seconds');
         setShiftDurationSeconds(durationSecs);
 
-        setRawShiftData({
+        setShiftInfo({
           name: dayData.shift?.name || 'General Shift',
-          start: dayData.start_time,
-          end: dayData.end_time
+          start: moment(dayData.start_time, 'HH:mm:ss').format('hh:mm A'),
+          end: moment(dayData.end_time, 'HH:mm:ss').format('hh:mm A')
         });
       }
     } catch (e) {
