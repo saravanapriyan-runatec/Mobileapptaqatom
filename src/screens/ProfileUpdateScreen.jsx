@@ -95,7 +95,7 @@ export default function ProfileUpdateScreen({ onBack }) {
             }
         })();
     }, []);
-
+    console.log("userData", userData)
     /* ─── Edit Picture Handler ─── */
     const handleEditPicture = async () => {
         try {
@@ -106,7 +106,7 @@ export default function ProfileUpdateScreen({ onBack }) {
             if (result.canceled || !result.assets?.length) { setUpdating(false); return; }
 
             const file = result.assets[0];
-            
+
             // Client-side size check (e.g., 5MB limit)
             const MAX_SIZE = 5 * 1024 * 1024; // 5MB
             if (file.size > MAX_SIZE) {
@@ -137,10 +137,10 @@ export default function ProfileUpdateScreen({ onBack }) {
                 const cleaned = {};
                 for (const key in obj) {
                     const value = obj[key];
-                    
+
                     // Filter out 160-character hex tokens (Session/Auth tokens)
                     const isToken = typeof value === 'string' && value.length > 50 && /^[a-f0-9]+$/i.test(value);
-                    
+
                     if (!isToken) {
                         if (typeof value === 'object' && value !== null) {
                             cleaned[key] = deepClean(value);
@@ -158,7 +158,7 @@ export default function ProfileUpdateScreen({ onBack }) {
                 department_code, position_name, position_code,
                 dependents, payroll, salary_template, ssn, user: rawUser,
                 gosi, marital_status, manager_details,
-                insurance, insurance_details, 
+                insurance, insurance_details,
                 contract, contract_details,
                 ...restOfDetails
             } = initialData;
@@ -179,13 +179,13 @@ export default function ProfileUpdateScreen({ onBack }) {
                 ...(gosi != null ? { gosi } : {}),
                 ...(insurance != null ? { insurance } : {}),
                 ...(marital_status != null && marital_status !== '' ? { marital_status: Number(marital_status) } : {}),
-                ...(safeUserId ? { 
-                    user: { 
-                        id: safeUserId, 
-                        first_name: initialData.first_name, 
-                        last_name: initialData.last_name, 
-                        email: initialData.email 
-                    } 
+                ...(safeUserId ? {
+                    user: {
+                        id: safeUserId,
+                        first_name: initialData.first_name,
+                        last_name: initialData.last_name,
+                        email: initialData.email
+                    }
                 } : {}),
                 ...(payroll ? { payroll } : {}),
             };
@@ -195,13 +195,17 @@ export default function ProfileUpdateScreen({ onBack }) {
                 // ✅ FIX: Actually upload the image to S3 using the backend's presigned URL
                 try {
                     console.log('DEBUG: Requesting S3 presigned URL for upload...');
+                    console.log("rrrrrrrrrrrrrrrrrrrrrrrrrr");
+
                     const empCode = userData.empId || initialData?.employee_code || initialData?.emp_code || '';
                     if (empCode) {
                         const s3Response = await ProfileServices.updateProfilePic(empCode, file);
-                        const s3Url = typeof s3Response === 'string' 
-                            ? s3Response 
+                        console.log("aaaaaaaaaaaaaa", s3Response);
+
+                        const s3Url = typeof s3Response === 'string'
+                            ? s3Response
                             : (s3Response?.url || s3Response?.presigned_url || s3Response?.data);
-                        
+
                         if (s3Url) {
                             console.log('DEBUG: Uploading local image blob to S3...', s3Url.substring(0, 50));
                             const localRes = await fetch(file.uri);
@@ -218,7 +222,8 @@ export default function ProfileUpdateScreen({ onBack }) {
 
                 // Refresh global context so dashboard header updates immediately
                 await refreshUserData();
-                
+                console.log("rrr1", file.uri);
+
                 // Update local state for immediate visual feedback
                 setUserData(prev => ({ ...prev, profileImage: file.uri }));
                 Toast.show({ type: 'success', text1: t(tokens.nav.success), text2: t(tokens.nav.profilePictureUpdated) });
@@ -226,7 +231,7 @@ export default function ProfileUpdateScreen({ onBack }) {
         } catch (error) {
             console.error('Upload error:', JSON.stringify(error, null, 2));
             let msg = 'Please try again.';
-            
+
             if (error?.status === 413) {
                 msg = 'Image size is too large for the server. Please select a smaller image.';
             } else {
@@ -251,7 +256,7 @@ export default function ProfileUpdateScreen({ onBack }) {
         if (userData.profileImage && userData.profileImage !== 'null' && userData.profileImage.trim() !== '') {
             if (userData.profileImage.startsWith('http')) {
                 console.log('DEBUG [ProfileUpdateScreen] returning network source:', userData.profileImage);
-                return { 
+                return {
                     uri: userData.profileImage,
                     headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache', 'CacheBust': Date.now().toString() }
                 };
@@ -259,9 +264,9 @@ export default function ProfileUpdateScreen({ onBack }) {
             console.log('DEBUG [ProfileUpdateScreen] returning local uri source:', userData.profileImage);
             return { uri: userData.profileImage };
         }
-        
+
         const isFemale = userData.gender?.toUpperCase() === 'F' || userData.gender?.toLowerCase() === 'female';
-        
+
         try {
             console.log('DEBUG [ProfileUpdateScreen] returning local fallback asset');
             return isFemale
@@ -288,93 +293,93 @@ export default function ProfileUpdateScreen({ onBack }) {
             <LinearGradient colors={['#8EA3E3', '#FFFFFF']} locations={[0, 0.5]} style={styles.bg} />
 
             {/* ── Header ── */}
-              <ScrollView
+            <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 showsVerticalScrollIndicator={false}
                 bounces={false}
             >
-            <LinearGradient colors={['#8EA3E3', '#FFFFFF']} locations={[0, 0.3]} style={styles.bg} />
-            <View style={{ minHeight: height }}>
-            <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-                <TouchableOpacity onPress={onBack} hitSlop={12} style={styles.backBtn}>
-                    <Ionicons name="arrow-back" size={22} color="#1C1C1E" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{t(tokens.profile.myProfile)}</Text>
-            </View>
-
-            {/* <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll} bounces={false}> */}
-<View style={styles.scroll}>
-                {/* ════════ CARD 1 — Profile Card ════════ */}
-                <View style={styles.card}>
-                    <LinearGradient
-                        colors={['#d3def9ff', '#FFFFFF', '#d3def9ff']}
-                        locations={[0, 0.5, 1]}
-                        start={{ x: 0, y: 0.5 }}
-                        end={{ x: 1, y: 0.5 }}
-                        style={styles.profileGradient}
-                    >
-                        {/* Avatar */}
-                        <View style={styles.avatarRing}>
-                            <Image 
-                                source={getProfileImage()} 
-                                style={[styles.avatar, { backgroundColor: '#F0F0F0' }]} 
-                                key={`${userData.profileImage}-${userData.gender}`}
-                                onError={(e) => console.log('DEBUG [ProfileUpdateScreen] Image Load ERROR:', e.nativeEvent.error)}
-                            />
-                        </View>
-
-                        {/* Edit Picture */}
-                        <TouchableOpacity
-                            style={styles.editPicBtn}
-                            activeOpacity={0.6}
-                            onPress={handleEditPicture}
-                            disabled={updating}
-                        >
-                            {updating ? (
-                                <ActivityIndicator size="small" color="#4A90E2" />
-                            ) : (
-                                <>
-                                    <Ionicons name="create-outline" size={14} color="#4A90E2" />
-                                    <Text style={styles.editPicTxt}>{t(tokens.nav.editPicture)}</Text>
-                                </>
-                            )}
+                <LinearGradient colors={['#8EA3E3', '#FFFFFF']} locations={[0, 0.3]} style={styles.bg} />
+                <View style={{ minHeight: height }}>
+                    <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+                        <TouchableOpacity onPress={onBack} hitSlop={12} style={styles.backBtn}>
+                            <Ionicons name="arrow-back" size={22} color="#1C1C1E" />
                         </TouchableOpacity>
+                        <Text style={styles.headerTitle}>{t(tokens.profile.myProfile)}</Text>
+                    </View>
 
-                        {/* Name */}
-                        <Text style={styles.nameText}>{userData.name}</Text>
+                    {/* <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll} bounces={false}> */}
+                    <View style={styles.scroll}>
+                        {/* ════════ CARD 1 — Profile Card ════════ */}
+                        <View style={styles.card}>
+                            <LinearGradient
+                                colors={['#d3def9ff', '#FFFFFF', '#d3def9ff']}
+                                locations={[0, 0.5, 1]}
+                                start={{ x: 0, y: 0.5 }}
+                                end={{ x: 1, y: 0.5 }}
+                                style={styles.profileGradient}
+                            >
+                                {/* Avatar */}
+                                <View style={styles.avatarRing}>
+                                    <Image
+                                        source={getProfileImage()}
+                                        style={[styles.avatar, { backgroundColor: '#F0F0F0' }]}
+                                        key={`${userData.profileImage}-${userData.gender}`}
+                                        onError={(e) => console.log('DEBUG [ProfileUpdateScreen] Image Load ERROR:', e.nativeEvent.error)}
+                                    />
+                                </View>
 
-                        {/* Emp info row */}
-                        <View style={styles.empRow}>
-                            <Text style={styles.empTxt}>{userData.empId}</Text>
-                            <Text style={styles.empPipe}>|</Text>
-                            <Text style={styles.empTxt}>{userData.employmentType}</Text>
-                            <Text style={styles.empPipe}>|</Text>
-                            <Text style={styles.empTxt}>{userData.department}</Text>
-                            <Text style={styles.empPipe}>|</Text>
-                            <Text style={styles.empTxt}>{userData.team}</Text>
+                                {/* Edit Picture */}
+                                <TouchableOpacity
+                                    style={styles.editPicBtn}
+                                    activeOpacity={0.6}
+                                    onPress={handleEditPicture}
+                                    disabled={updating}
+                                >
+                                    {updating ? (
+                                        <ActivityIndicator size="small" color="#4A90E2" />
+                                    ) : (
+                                        <>
+                                            <Ionicons name="create-outline" size={14} color="#4A90E2" />
+                                            <Text style={styles.editPicTxt}>{t(tokens.nav.editPicture)}</Text>
+                                        </>
+                                    )}
+                                </TouchableOpacity>
+
+                                {/* Name */}
+                                <Text style={styles.nameText}>{userData.name}</Text>
+
+                                {/* Emp info row */}
+                                <View style={styles.empRow}>
+                                    <Text style={styles.empTxt}>{userData.empId}</Text>
+                                    <Text style={styles.empPipe}>|</Text>
+                                    <Text style={styles.empTxt}>{userData.employmentType}</Text>
+                                    <Text style={styles.empPipe}>|</Text>
+                                    <Text style={styles.empTxt}>{userData.department}</Text>
+                                    <Text style={styles.empPipe}>|</Text>
+                                    <Text style={styles.empTxt}>{userData.team}</Text>
+                                </View>
+
+                                {/* Reports To */}
+                                <Text style={styles.reportsTo}>
+                                    {t(tokens.profile.reportsTo)}: <Text style={styles.managerBold}>{userData.reportsTo}</Text>
+                                </Text>
+                            </LinearGradient>
                         </View>
 
-                        {/* Reports To */}
-                        <Text style={styles.reportsTo}>
-                            {t(tokens.profile.reportsTo)}: <Text style={styles.managerBold}>{userData.reportsTo}</Text>
-                        </Text>
-                    </LinearGradient>
-                </View>
+                        {/* ════════ CARD 2 — Personal Information Card ════════ */}
+                        <View style={[styles.card, styles.infoCard]}>
+                            <Text style={styles.sectionTitle}>{t(tokens.nav.personalInformation)}</Text>
 
-                {/* ════════ CARD 2 — Personal Information Card ════════ */}
-                <View style={[styles.card, styles.infoCard]}>
-                    <Text style={styles.sectionTitle}>{t(tokens.nav.personalInformation)}</Text>
+                            <InfoRow label={t(tokens.nav.fullName)} value={userData.fullName} />
+                            <InfoRow label={t(tokens.nav.dob)} value={userData.dob} />
+                            <InfoRow label={t(tokens.nav.mailId)} value={userData.mailId} />
+                            <InfoRow label={t(tokens.nav.mobileNo)} value={userData.mobileNo} />
+                            <InfoRow label={t(tokens.nav.address)} value={userData.address} />
+                            <InfoRow label={t(tokens.nav.emergencyContact)} value={userData.emergencyContact} />
+                        </View>
 
-                    <InfoRow label={t(tokens.nav.fullName)} value={userData.fullName} />
-                    <InfoRow label={t(tokens.nav.dob)} value={userData.dob} />
-                    <InfoRow label={t(tokens.nav.mailId)} value={userData.mailId} />
-                    <InfoRow label={t(tokens.nav.mobileNo)} value={userData.mobileNo} />
-                    <InfoRow label={t(tokens.nav.address)} value={userData.address} />
-                    <InfoRow label={t(tokens.nav.emergencyContact)} value={userData.emergencyContact} />
-                </View>
-
-                <View style={{ height: 40 }} />
-                </View>
+                        <View style={{ height: 40 }} />
+                    </View>
                 </View>
             </ScrollView>
         </View>
@@ -452,7 +457,7 @@ const styles = StyleSheet.create({
         width: 92,
         height: 92,
         borderRadius: 46,
-       
+
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#FFFFFF',

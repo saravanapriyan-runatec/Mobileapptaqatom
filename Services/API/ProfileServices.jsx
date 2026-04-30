@@ -413,6 +413,8 @@ const ProfileServices = {
             return;
           }
           resolve(data);
+          console.log("responce data", data);
+
         },
       );
     });
@@ -616,23 +618,23 @@ const ProfileServices = {
   },
   getAllReports({ id, start, end, page, size }) {
     return new Promise((resolve, reject) => {
-          const url = `${API_URL}/attendance/reports/first_last/?&start_date=${start}&end_date=${end}&employees=${id}&page=${page + 1}&page_size=${size}`;
-          // console.log("📡 [ALL REPORTS] Request URL:", url);
-          APIService.request(
-            {
-              url: url,
-              method: 'GET',
-            },
-            (error, data) => {
-              if (error) {
-                console.error("❌ [ALL REPORTS] Error:", error);
-                reject(error);
-                return;
-              }
-              // console.log('✅ [ALL REPORTS] Response:', JSON.stringify(data, null, 2));
-              resolve(data);
-            },
-          );
+      const url = `${API_URL}/attendance/reports/first_last/?&start_date=${start}&end_date=${end}&employees=${id}&page=${page + 1}&page_size=${size}`;
+      // console.log("📡 [ALL REPORTS] Request URL:", url);
+      APIService.request(
+        {
+          url: url,
+          method: 'GET',
+        },
+        (error, data) => {
+          if (error) {
+            console.error("❌ [ALL REPORTS] Error:", error);
+            reject(error);
+            return;
+          }
+          // console.log('✅ [ALL REPORTS] Response:', JSON.stringify(data, null, 2));
+          resolve(data);
+        },
+      );
     });
   },
   getExpenseDetails(userId) {
@@ -2666,13 +2668,13 @@ const ProfileServices = {
     const org_code = await AuthService.getOrgCode();
     const url = `${API_URL}/workflow/tasks/${id}/status-update/`;
     const payload = { status, org_code };
-    
+
     console.log('--------------------------------------------------');
     console.log('🏁 [API CALL] updateTaskStatus (FINAL PARENT COMPLETION)');
     console.log('URL:', url);
     console.log('PAYLOAD:', JSON.stringify(payload, null, 2));
     console.log('--------------------------------------------------');
-    
+
     return new Promise((resolve, reject) => {
       APIService.request(
         {
@@ -2840,13 +2842,13 @@ const ProfileServices = {
   updateAssetCondition(assetId, condition) {
     const url = `${API_URL}/workflow/task-assets/${assetId}/status-update/`;
     const payload = { condition: condition.toUpperCase() };
-    
+
     console.log('--------------------------------------------------');
     console.log('📡 [API CALL] updateAssetCondition');
     console.log('URL:', url);
     console.log('PAYLOAD:', JSON.stringify(payload, null, 2));
     console.log('--------------------------------------------------');
-    
+
     return new Promise((resolve, reject) => {
       APIService.request(
         {
@@ -2869,13 +2871,13 @@ const ProfileServices = {
   updateAssetStatusData(assetId, payloadData) {
     const url = `${API_URL}/workflow/task-assets/${assetId}/status-update/`;
     const payload = typeof payloadData === 'string' ? { status: payloadData.toUpperCase() } : payloadData;
-    
+
     console.log('--------------------------------------------------');
     console.log('📡 [API CALL] updateAssetStatusData');
     console.log('URL:', url);
     console.log('PAYLOAD:', JSON.stringify(payload, null, 2));
     console.log('--------------------------------------------------');
-    
+
     return new Promise((resolve, reject) => {
       APIService.request(
         {
@@ -2898,13 +2900,13 @@ const ProfileServices = {
   updateTaskStatusWithComments(taskId, commentsArray) {
     const url = `${API_URL}/workflow/tasks/${taskId}/status-update/`;
     const payload = { comments: commentsArray };
-    
+
     console.log('--------------------------------------------------');
     console.log('📡 [API CALL] updateTaskStatusWithComments');
     console.log('URL:', url);
     console.log('PAYLOAD:', JSON.stringify(payload, null, 2));
     console.log('--------------------------------------------------');
-    
+
     return new Promise((resolve, reject) => {
       APIService.request(
         {
@@ -2927,13 +2929,13 @@ const ProfileServices = {
   uploadTaskAttachment(taskId, attachmentsArray) {
     const url = `${API_URL}/workflow/tasks/${taskId}/upload-attachment/`;
     const payload = { attachments: attachmentsArray };
-    
+
     console.log('--------------------------------------------------');
     console.log('📡 [API CALL] uploadTaskAttachment');
     console.log('URL:', url);
     console.log('PAYLOAD:', JSON.stringify({ attachments: attachmentsArray.map(a => ({ filename: a.filename, image_binary: "..." })) }, null, 2));
     console.log('--------------------------------------------------');
-    
+
     return new Promise((resolve, reject) => {
       APIService.request(
         {
