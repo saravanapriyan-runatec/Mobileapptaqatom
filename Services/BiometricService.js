@@ -40,8 +40,7 @@ class BiometricService {
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage,
         fallbackLabel: 'Use Password',
-        cancelLabel: 'Cancel',
-        disableDeviceFallback: true,
+        cancelLabel: 'Cancel'
       });
 
       return result; // { success: boolean, error?: string }

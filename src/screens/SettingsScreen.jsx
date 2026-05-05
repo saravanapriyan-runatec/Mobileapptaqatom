@@ -13,6 +13,7 @@ import { useUser } from '../context/UserContext';
 import { getAbsoluteProfileUrl } from '../utils/imageUtils';
 import BiometricService from '../../Services/BiometricService';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width,height} = Dimensions.get('window');
 
@@ -33,13 +34,30 @@ export default function SettingsScreen({ onBack, onNavigate }) {
     const [biometricLoading, setBiometricLoading] = useState(false);
 
     useEffect(() => {
-        // Check if biometric is already enabled
+        // Check if biometric is already enabled for the CURRENT user
         const checkBiometric = async () => {
             const creds = await BiometricService.getCredentials();
-            setIsBiometricEnabled(!!creds);
+            const currentEmail = await AsyncStorage.getItem("email");
+            const fallbackEmail = userDetails?.email || userData.name;
+
+            if (creds) {
+                // If we have an exact match with the stored login email
+                if (currentEmail && creds.email === currentEmail) {
+                    setIsBiometricEnabled(true);
+                } 
+                // Fallback check against userDetails in case AsyncStorage is empty
+                else if (fallbackEmail && creds.email === fallbackEmail) {
+                    setIsBiometricEnabled(true);
+                } 
+                else {
+                    setIsBiometricEnabled(false);
+                }
+            } else {
+                setIsBiometricEnabled(false);
+            }
         };
         checkBiometric();
-    }, []);
+    }, [userDetails, userData.name]);
 
     const toggleBiometric = async (value) => {
         if (!value) {
@@ -73,9 +91,12 @@ export default function SettingsScreen({ onBack, onNavigate }) {
                 return;
             }
 
-            // Save credentials (using email from userDetails)
-            const email = userDetails?.email || userData.name;
-            await BiometricService.saveCredentials(email, passwordForBiometric);
+            // Save credentials (using email from AsyncStorage or fallback)
+            let emailToSave = await AsyncStorage.getItem("email");
+            if (!emailToSave) {
+                emailToSave = userDetails?.email || userData.name;
+            }
+            await BiometricService.saveCredentials(emailToSave, passwordForBiometric);
             
             setIsBiometricEnabled(true);
             setShowBiometricModal(false);

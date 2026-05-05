@@ -45,6 +45,15 @@ export default function LoginScreen({ domain, onLoginSuccess, onSwitchOrg, onFor
     if (support.supported) {
       const creds = await BiometricService.getCredentials();
       if (creds) {
+        const lastEmail = await AsyncStorage.getItem("email");
+        
+        // If there is a last logged in email, and it does not match the biometric credentials,
+        // it means another user was logged in. We should not show biometric login.
+        if (lastEmail && creds.email !== lastEmail) {
+          setHasBiometricCredentials(false);
+          return;
+        }
+
         setHasBiometricCredentials(true);
         // Auto-prompt on mount
         handleBiometricLogin(creds);
