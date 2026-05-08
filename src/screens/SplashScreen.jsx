@@ -98,7 +98,7 @@ export default function SplashScreen({ onFinish }) {
 
             {/* Bottom Loading Indicator & Version */}
             <View style={styles.footer}>
-                <Text style={styles.versionText}>v1.0.0</Text>
+                <Text style={styles.versionText}>v1.0.1</Text>
                 <View style={styles.loadingTrack}>
                     <Animated.View style={[
                         styles.shimmer,

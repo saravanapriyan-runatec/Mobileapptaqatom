@@ -5,7 +5,7 @@ import packageJSON from '../../package.json';
 
 // API Configuration
 const API_CONFIG = {
-  BASE_URL: 'https://api-dev-mvp.hr-ms.com',
+  BASE_URL: 'https://api-mvp.hr-ms.com',
 };
 
 // Get URL for headers

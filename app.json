@@ -2,7 +2,7 @@
   "expo": {
     "name": "Taqadom HRMS",
     "slug": "hrms-app",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon-master.png",
     "scheme": "taqadom",
@@ -34,7 +34,7 @@
     },
     "android": {
       "targetSdkVersion": 36,
-      "versionCode": 1,
+      "versionCode": 4,
       "minSdkVersion": 24,
       "package": "com.hr_ms.app",
       "adaptiveIcon": {

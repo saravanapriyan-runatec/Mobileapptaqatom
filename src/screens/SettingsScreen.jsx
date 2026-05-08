@@ -303,7 +303,7 @@ export default function SettingsScreen({ onBack, onNavigate }) {
 
                     {/* App Version */}
                     <View style={styles.versionContainer}>
-                        <Text style={styles.versionText}>1.0.0</Text>
+                        <Text style={styles.versionText}>1.0.1</Text>
                     </View>
                 </View>
             </ScrollView>
